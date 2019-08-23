@@ -1,6 +1,7 @@
 # Creating a TicTacToe game using PyGame
 
-TLDR: TicTacToe but bigger and a little bit more difficult to win\n
+TLDR: TicTacToe but bigger and a little bit more difficult to win
+
 Slightly longer instruction:
   - 2 players take turns to make their move.
   - The game ends when one player has 5 pieces in a row (whether it is horizontal, vertical, or diagonal).
