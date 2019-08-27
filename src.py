@@ -36,10 +36,8 @@ class TicTacToe:
 
     def execute(self):
         done, grid, player, state = self.initialize_game()
-        # clock = pygame.time.Clock()
         while not done:
             done, player, state = self.run_game(done, grid, player, state)
-            # clock.tick(60)
 
     def initialize_game(self) -> Tuple[bool, List[List], int, str]:
         pygame.init()
@@ -154,37 +152,34 @@ class TicTacToe:
     def check_winning_condition(self, counter, grid, symbol, win_type, start, end):
         if counter == 5:
             if win_type == 0:
-                left_cond, right_cond = self.check(grid, start[0] - 1, start[1], end[0] + 1, end[1], symbol)
-                return not (left_cond and right_cond)
+                return not self.check_horizontally(grid, start[0] - 1, start[1], end[0] + 1, end[1], symbol)
             if win_type == 1:
-                top_cond = (start[1] - 1 >= 0 and grid[start[0]][start[1] - 1][1] is not None and
-                            grid[start[0]][start[1] - 1][1] != symbol)
-                bottom_cond = (end[1] + 1 < 30 and grid[end[0]][end[1] + 1][1] is not None and
-                               grid[end[0]][end[1] + 1][1] != symbol)
-                return not (top_cond and bottom_cond)
+                return not self.check_vertically(grid, start[0], start[1] - 1, end[0], end[1] + 1, symbol)
             if win_type == 2:
-                top_left_cond = (start[0] - 1 >= 0 and start[1] - 1 >= 0 and
-                                 grid[start[0] - 1][start[1] - 1][1] is not None and
-                                 grid[start[0] - 1][start[1] - 1][1] != symbol)
-                bottom_right_cond = (end[0] + 1 < 30 and end[1] + 1 < 30 and
-                                     grid[end[0] + 1][end[1] + 1][1] is not None and
-                                     grid[end[0] + 1][end[1] + 1][1] != symbol)
-                return not (top_left_cond and bottom_right_cond)
+                return not self.check_diagonally(grid, start[0] - 1, start[1] - 1, end[0] + 1, end[1] + 1, symbol)
             if win_type == 3:
-                bottom_left_cond = (start[0] - 1 >= 0 and start[1] + 1 < 30 and
-                                    grid[start[0] - 1][start[1] + 1][1] is not None and
-                                    grid[start[0] - 1][start[1] + 1][1] != symbol)
-                top_right_cond = (end[0] + 1 < 30 and end[1] - 1 >= 0 and
-                                  grid[end[0] + 1][end[1] - 1][1] is not None and
-                                  grid[end[0] + 1][end[1] - 1][1] != symbol)
-                return not (bottom_left_cond and top_right_cond)
+                return not self.check_diagonally(grid, start[0] - 1, start[1] + 1, end[0] + 1, end[1] - 1, symbol)
         return False
 
     @staticmethod
-    def check(grid, start_i, start_j, end_i, end_j, symbol):
-        left_cond = start_i >= 0 and grid[start_i][start_j][1] is not None and grid[start_i][start_j][1] != symbol
-        right_cond = end_i < 30 and grid[end_i][end_j][1] is not None and grid[end_i][end_j][1] != symbol
-        return left_cond, right_cond
+    def check_horizontally(grid, start_i, start_j, end_i, end_j, symbol):
+        left = start_i >= 0 and grid[start_i][start_j][1] is not None and grid[start_i][start_j][1] != symbol
+        right = end_i < 30 and grid[end_i][end_j][1] is not None and grid[end_i][end_j][1] != symbol
+        return left and right
+
+    @staticmethod
+    def check_vertically(grid, start_i, start_j, end_i, end_j, symbol):
+        top = start_j >= 0 and grid[start_i][start_j][1] is not None and grid[start_i][start_j][1] != symbol
+        bottom = end_j < 30 and grid[end_i][end_j][1] is not None and grid[end_i][end_j][1] != symbol
+        return top and bottom
+
+    @staticmethod
+    def check_diagonally(grid, start_i, start_j, end_i, end_j, symbol):
+        first = (start_i in range(0, 30) and start_j in range(0, 30) and
+                 grid[start_i][start_j][1] is not None and grid[start_i][start_j][1] != symbol)
+        second = (end_i < 30 and end_j < 30 and
+                  grid[end_i][end_j][1] is not None and grid[end_i][end_j][1] != symbol)
+        return first and second
 
     @staticmethod
     def game_over(player):
