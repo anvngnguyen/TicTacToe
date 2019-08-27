@@ -1,3 +1,4 @@
+import math
 import pygame
 from typing import List, Tuple
 
@@ -80,89 +81,75 @@ class TicTacToe:
     def make_move(self, grid, player, state):
         change_player = False
         symbol = "X" if player == 0 else "O"
-        for i, _ in enumerate(grid):
-            for j, _ in enumerate(grid[i]):
-                mouse_position = pygame.mouse.get_pos()
-                if grid[i][j][0].collidepoint(mouse_position[0], mouse_position[1]) and grid[i][j][1] is None:
-                    change_player = True
-                    self.draw_move(grid[i][j], symbol)
-                    left_limit, top_limit, right_limit, bottom_limit = self.calculate_four_boundaries(i, j)
-                    print(f"Check for {i}-{j}")
-                    state = self.check_for_consecutive_move(grid, symbol, i, j, left_limit, right_limit, top_limit, bottom_limit)
+
+        i, j = math.floor(pygame.mouse.get_pos()[0] / 21), math.floor(pygame.mouse.get_pos()[1] / 21)
+
+        if grid[i][j][1] is None:
+            change_player = True
+            self.draw(grid[i][j], symbol)
+            state = self.check_if_won(grid, symbol, i, j)
+
         if change_player:
             player = 1 - player
+
         return player, state
 
-    def draw_move(self, cell, symbol):
+    def draw(self, cell, symbol):
         self.SCREEN.blit(self.FONT.render(symbol, True, (255, 0, 0)), (cell[0][0] + 5, cell[0][1] + 1))
         cell[1] = symbol
 
-    def check_for_consecutive_move(self, grid, symbol, i, j, left_limit, right_limit, top_limit, bottom_limit):
-        if self.check_horizontal_line(0, grid, i, j, 4, 4, symbol, 0):
+    def check_if_won(self, grid, symbol, i, j):
+        if self.check_horizontal(0, grid, i, j, 4, 4, symbol, 0):
             return "GAME-OVER"
 
-        if self.check_vertical_line(0, grid, i, j, 4, 4, symbol, 1):
+        if self.check_vertical(0, grid, i, j, 4, 4, symbol, 1):
             return "GAME-OVER"
 
         offset = zip(range(i - 4, i + 4 + 1), range(j - 4, j + 4 + 1))
-        if self.check_diagonal_line(0, grid, symbol, 2, offset):
+        if self.check_diagonal(0, grid, symbol, 2, offset):
             return "GAME-OVER"
 
         offset = zip(range(i - 4, i + 4 + 1), range(j + 4, j - 4 - 1, -1))
-        if self.check_diagonal_line(0, grid, symbol, 3, offset):
+        if self.check_diagonal(0, grid, symbol, 3, offset):
             return "GAME-OVER"
 
         return "PLAYING"
 
-    def calculate_four_boundaries(self, i, j):
-        top_limit, bottom_limit = self.calculate_pair_boundaries(j)
-        left_limit, right_limit = self.calculate_pair_boundaries(i)
-        return left_limit, top_limit, right_limit, bottom_limit
-
-    @staticmethod
-    def calculate_pair_boundaries(index):
-        first = 4 if index + 1 > 4 else index
-        second = 4 if 30 - (index + 1) > 4 else 30 - (index + 1)
-        return first, second
-
-    def check_horizontal_line(self, counter, grid, i, j, left_limit, right_limit, symbol, win_type):
+    def check_horizontal(self, counter, grid, i, j, left_limit, right_limit, symbol, win_type):
         start, end = None, None
         for index in range(i - left_limit, i + right_limit + 1):
             if grid[index][j][1] == symbol:
-                counter += 1
-                if counter == 1:
-                    start = (index, j)
-                if counter == 5:
-                    end = (index, j)
+                counter, start, end = self.count_symbol(counter, index, j, start, end)
             else:
                 counter = 0 if counter < 5 else counter
-        return self.check_winning_condition(counter, grid, symbol, 0, start, end)
+        return self.check_winning_condition(counter, grid, symbol, win_type, start, end)
 
-    def check_vertical_line(self, counter, grid, i, j, top_limit, bottom_limit, symbol, win_type):
+    def check_vertical(self, counter, grid, i, j, top_limit, bottom_limit, symbol, win_type):
         start, end = None, None
         for index in range(j - top_limit, j + bottom_limit + 1):
             if grid[i][index][1] == symbol:
-                counter += 1
-                if counter == 1:
-                    start = (i, index)
-                if counter == 5:
-                    end = (i, index)
+                counter, start, end = self.count_symbol(counter, i, index, start, end)
             else:
                 counter = 0 if counter < 5 else counter
         return self.check_winning_condition(counter, grid, symbol, win_type, start, end)
 
-    def check_diagonal_line(self, counter, grid, symbol, win_type, offset):
+    def check_diagonal(self, counter, grid, symbol, win_type, offset):
         start, end = None, None
         for i_offset, j_offset in offset:
             if grid[i_offset][j_offset][1] == symbol:
-                counter += 1
-                if counter == 1:
-                    start = (i_offset, j_offset)
-                if counter == 5:
-                    end = (i_offset, j_offset)
+                counter, start, end = self.count_symbol(counter, i_offset, j_offset, start, end)
             else:
                 counter = 0 if counter < 5 else counter
         return self.check_winning_condition(counter, grid, symbol, win_type, start, end)
+
+    @staticmethod
+    def count_symbol(counter, i, j, start, end):
+        counter += 1
+        if counter == 1:
+            start = (i, j)
+        if counter == 5:
+            end = (i, j)
+        return counter, start, end
 
     @staticmethod
     def check_winning_condition(counter, grid, symbol, win_type, start, end):
