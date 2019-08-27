@@ -36,10 +36,10 @@ class TicTacToe:
 
     def execute(self):
         done, grid, player, state = self.initialize_game()
-        clock = pygame.time.Clock()
+        # clock = pygame.time.Clock()
         while not done:
             done, player, state = self.run_game(done, grid, player, state)
-            clock.tick(60)
+            # clock.tick(60)
 
     def initialize_game(self) -> Tuple[bool, List[List], int, str]:
         pygame.init()
@@ -99,44 +99,44 @@ class TicTacToe:
         cell[1] = symbol
 
     def check_if_won(self, grid, symbol, i, j):
-        if self.check_horizontal(0, grid, i, j, 4, 4, symbol, 0):
+        if self.count_horizontally(0, grid, i, j, 4, 4, symbol, 0):
             return "GAME-OVER"
 
-        if self.check_vertical(0, grid, i, j, 4, 4, symbol, 1):
+        if self.count_vertically(0, grid, i, j, 4, 4, symbol, 1):
             return "GAME-OVER"
 
         offset = zip(range(i - 4, i + 4 + 1), range(j - 4, j + 4 + 1))
-        if self.check_diagonal(0, grid, symbol, 2, offset):
+        if self.count_diagonally(0, grid, symbol, 2, offset):
             return "GAME-OVER"
 
         offset = zip(range(i - 4, i + 4 + 1), range(j + 4, j - 4 - 1, -1))
-        if self.check_diagonal(0, grid, symbol, 3, offset):
+        if self.count_diagonally(0, grid, symbol, 3, offset):
             return "GAME-OVER"
 
         return "PLAYING"
 
-    def check_horizontal(self, counter, grid, i, j, left_limit, right_limit, symbol, win_type):
+    def count_horizontally(self, counter, grid, i, j, left_limit, right_limit, symbol, win_type):
         start, end = None, None
         for index in range(i - left_limit, i + right_limit + 1):
-            if grid[index][j][1] == symbol:
+            if index in range(0, 30) and grid[index][j][1] == symbol:
                 counter, start, end = self.count_symbol(counter, index, j, start, end)
             else:
                 counter = 0 if counter < 5 else counter
         return self.check_winning_condition(counter, grid, symbol, win_type, start, end)
 
-    def check_vertical(self, counter, grid, i, j, top_limit, bottom_limit, symbol, win_type):
+    def count_vertically(self, counter, grid, i, j, top_limit, bottom_limit, symbol, win_type):
         start, end = None, None
         for index in range(j - top_limit, j + bottom_limit + 1):
-            if grid[i][index][1] == symbol:
+            if index in range(0, 30) and grid[i][index][1] == symbol:
                 counter, start, end = self.count_symbol(counter, i, index, start, end)
             else:
                 counter = 0 if counter < 5 else counter
         return self.check_winning_condition(counter, grid, symbol, win_type, start, end)
 
-    def check_diagonal(self, counter, grid, symbol, win_type, offset):
+    def count_diagonally(self, counter, grid, symbol, win_type, offset):
         start, end = None, None
         for i_offset, j_offset in offset:
-            if grid[i_offset][j_offset][1] == symbol:
+            if i_offset in range(0, 30) and j_offset in range(0, 30) and grid[i_offset][j_offset][1] == symbol:
                 counter, start, end = self.count_symbol(counter, i_offset, j_offset, start, end)
             else:
                 counter = 0 if counter < 5 else counter
@@ -151,25 +151,18 @@ class TicTacToe:
             end = (i, j)
         return counter, start, end
 
-    @staticmethod
-    def check_winning_condition(counter, grid, symbol, win_type, start, end):
+    def check_winning_condition(self, counter, grid, symbol, win_type, start, end):
         if counter == 5:
             if win_type == 0:
-                print(f"Check win type {win_type}")
-                left_cond = (start[0] - 1 >= 0 and grid[start[0] - 1][start[1]][1] is not None and
-                             grid[start[0] - 1][start[1]][1] != symbol)
-                right_cond = (end[0] + 1 < 30 and grid[end[0] + 1][end[1]][1] is not None and
-                              grid[end[0] + 1][end[1]][1] != symbol)
+                left_cond, right_cond = self.check(grid, start[0] - 1, start[1], end[0] + 1, end[1], symbol)
                 return not (left_cond and right_cond)
             if win_type == 1:
-                print(f"Check win type {win_type}")
                 top_cond = (start[1] - 1 >= 0 and grid[start[0]][start[1] - 1][1] is not None and
                             grid[start[0]][start[1] - 1][1] != symbol)
                 bottom_cond = (end[1] + 1 < 30 and grid[end[0]][end[1] + 1][1] is not None and
                                grid[end[0]][end[1] + 1][1] != symbol)
                 return not (top_cond and bottom_cond)
             if win_type == 2:
-                print(f"Check win type {win_type}")
                 top_left_cond = (start[0] - 1 >= 0 and start[1] - 1 >= 0 and
                                  grid[start[0] - 1][start[1] - 1][1] is not None and
                                  grid[start[0] - 1][start[1] - 1][1] != symbol)
@@ -178,7 +171,6 @@ class TicTacToe:
                                      grid[end[0] + 1][end[1] + 1][1] != symbol)
                 return not (top_left_cond and bottom_right_cond)
             if win_type == 3:
-                print(f"Check win type {win_type}")
                 bottom_left_cond = (start[0] - 1 >= 0 and start[1] + 1 < 30 and
                                     grid[start[0] - 1][start[1] + 1][1] is not None and
                                     grid[start[0] - 1][start[1] + 1][1] != symbol)
@@ -187,6 +179,12 @@ class TicTacToe:
                                   grid[end[0] + 1][end[1] - 1][1] != symbol)
                 return not (bottom_left_cond and top_right_cond)
         return False
+
+    @staticmethod
+    def check(grid, start_i, start_j, end_i, end_j, symbol):
+        left_cond = start_i >= 0 and grid[start_i][start_j][1] is not None and grid[start_i][start_j][1] != symbol
+        right_cond = end_i < 30 and grid[end_i][end_j][1] is not None and grid[end_i][end_j][1] != symbol
+        return left_cond, right_cond
 
     @staticmethod
     def game_over(player):
