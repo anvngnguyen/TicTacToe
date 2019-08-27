@@ -1,11 +1,11 @@
 import pygame
+from typing import List, Tuple
 
 
 # TODO:
 # 1. Implement menu screen
 # 2. Implement game-over screen
-# 3. Implement sandwich rule: if 5 pieces of one player are sandwiched between 2 pieces of the other player, those 5
-# pieces won't count as a win
+# 3. Add documentation
 class TicTacToe:
     # Screen Variables
     WIDTH = 0
@@ -19,9 +19,6 @@ class TicTacToe:
     FONT = None
 
     def __init__(self):
-        """
-
-        """
         # Screen Setup
         self.WIDTH = 630
         self.HEIGHT = 630
@@ -37,21 +34,13 @@ class TicTacToe:
         self.FONT = pygame.font.SysFont("Arial", 15)
 
     def execute(self):
-        """
-
-        :return: None
-        """
         done, grid, player, state = self.initialize_game()
         clock = pygame.time.Clock()
         while not done:
             done, player, state = self.run_game(done, grid, player, state)
             clock.tick(60)
 
-    def initialize_game(self):
-        """
-
-        :return:
-        """
+    def initialize_game(self) -> Tuple[bool, List[List], int, str]:
         pygame.init()
         player = 0
         done = False
@@ -59,11 +48,7 @@ class TicTacToe:
         grid = self.initialize_grid()
         return done, grid, player, state
 
-    def initialize_grid(self):
-        """
-
-        :return:
-        """
+    def initialize_grid(self) -> List[List]:
         grid = []
         for x in range(30):
             grid.append([])
@@ -75,14 +60,6 @@ class TicTacToe:
         return grid
 
     def run_game(self, done, grid, player, state):
-        """
-
-        :param done:
-        :param grid:
-        :param player:
-        :param state:
-        :return:
-        """
         if state == "MENU":
             pass
         elif state == "PLAYING":
@@ -93,14 +70,6 @@ class TicTacToe:
         return done, player, state
 
     def play(self, done, grid, player, state):
-        """
-
-        :param done:
-        :param grid:
-        :param player:
-        :param state:
-        :return:
-        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True, None, "GAME-OVER"
@@ -109,13 +78,6 @@ class TicTacToe:
         return done, player, state
 
     def make_move(self, grid, player, state):
-        """
-
-        :param grid:
-        :param player:
-        :param state:
-        :return:
-        """
         change_player = False
         symbol = "X" if player == 0 else "O"
         for i, _ in enumerate(grid):
@@ -125,87 +87,118 @@ class TicTacToe:
                     change_player = True
                     self.draw_move(grid[i][j], symbol)
                     left_limit, top_limit, right_limit, bottom_limit = self.calculate_four_boundaries(i, j)
-                    state = self.method_name(grid, symbol, i, j, left_limit, right_limit, top_limit, bottom_limit)
-
+                    print(f"Check for {i}-{j}")
+                    state = self.check_for_consecutive_move(grid, symbol, i, j, left_limit, right_limit, top_limit, bottom_limit)
         if change_player:
             player = 1 - player
         return player, state
 
-    def method_name(self, grid, symbol, i, j, left_limit, right_limit, top_limit, bottom_limit):
-        if self.check_horizontal_line(0, grid, i, j, left_limit, right_limit, symbol):
+    def draw_move(self, cell, symbol):
+        self.SCREEN.blit(self.FONT.render(symbol, True, (255, 0, 0)), (cell[0][0] + 5, cell[0][1] + 1))
+        cell[1] = symbol
+
+    def check_for_consecutive_move(self, grid, symbol, i, j, left_limit, right_limit, top_limit, bottom_limit):
+        if self.check_horizontal_line(0, grid, i, j, 4, 4, symbol, 0):
             return "GAME-OVER"
 
-        if self.check_vertical_line(0, grid, i, j, top_limit, bottom_limit, symbol):
+        if self.check_vertical_line(0, grid, i, j, 4, 4, symbol, 1):
             return "GAME-OVER"
 
-        offset = zip(range(i - left_limit, i + right_limit + 1), range(j - top_limit, j + bottom_limit + 1))
-        if self.check_diagonal_line(0, grid, offset, symbol):
+        offset = zip(range(i - 4, i + 4 + 1), range(j - 4, j + 4 + 1))
+        if self.check_diagonal_line(0, grid, symbol, 2, offset):
             return "GAME-OVER"
 
-        offset = zip(range(i - left_limit, i + right_limit + 1), reversed(range(j - top_limit, j + bottom_limit + 1)))
-        if self.check_diagonal_line(0, grid, offset, symbol):
+        offset = zip(range(i - 4, i + 4 + 1), range(j + 4, j - 4 - 1, -1))
+        if self.check_diagonal_line(0, grid, symbol, 3, offset):
             return "GAME-OVER"
 
         return "PLAYING"
 
-    def draw_move(self, cell, symbol):
-        """
-
-        :param cell:
-        :param symbol:
-        :return: None
-        """
-        self.SCREEN.blit(self.FONT.render(symbol, True, (255, 0, 0)), (cell[0][0] + 5, cell[0][1] + 1))
-        cell[1] = symbol
-
     def calculate_four_boundaries(self, i, j):
-        """
-
-        :param i:
-        :param j:
-        :return:
-        """
         top_limit, bottom_limit = self.calculate_pair_boundaries(j)
         left_limit, right_limit = self.calculate_pair_boundaries(i)
         return left_limit, top_limit, right_limit, bottom_limit
 
     @staticmethod
-    def calculate_pair_boundaries(j):
-        first = 4 if j + 1 > 4 else j
-        second = 4 if 30 - (j + 1) > 4 else 30 - (j + 1)
+    def calculate_pair_boundaries(index):
+        first = 4 if index + 1 > 4 else index
+        second = 4 if 30 - (index + 1) > 4 else 30 - (index + 1)
         return first, second
 
-    @staticmethod
-    def check_horizontal_line(counter, grid, i, j, left_limit, right_limit, symbol):
+    def check_horizontal_line(self, counter, grid, i, j, left_limit, right_limit, symbol, win_type):
+        start, end = None, None
         for index in range(i - left_limit, i + right_limit + 1):
             if grid[index][j][1] == symbol:
                 counter += 1
+                if counter == 1:
+                    start = (index, j)
+                if counter == 5:
+                    end = (index, j)
             else:
                 counter = 0 if counter < 5 else counter
-        if counter == 5:
-            return True
-        return False
+        return self.check_winning_condition(counter, grid, symbol, 0, start, end)
 
-    @staticmethod
-    def check_vertical_line(counter, grid, i, j, top_limit, bottom_limit, symbol):
+    def check_vertical_line(self, counter, grid, i, j, top_limit, bottom_limit, symbol, win_type):
+        start, end = None, None
         for index in range(j - top_limit, j + bottom_limit + 1):
             if grid[i][index][1] == symbol:
                 counter += 1
+                if counter == 1:
+                    start = (i, index)
+                if counter == 5:
+                    end = (i, index)
             else:
                 counter = 0 if counter < 5 else counter
-        if counter == 5:
-            return True
-        return False
+        return self.check_winning_condition(counter, grid, symbol, win_type, start, end)
 
-    @staticmethod
-    def check_diagonal_line(counter, grid, offset, symbol):
+    def check_diagonal_line(self, counter, grid, symbol, win_type, offset):
+        start, end = None, None
         for i_offset, j_offset in offset:
             if grid[i_offset][j_offset][1] == symbol:
                 counter += 1
+                if counter == 1:
+                    start = (i_offset, j_offset)
+                if counter == 5:
+                    end = (i_offset, j_offset)
             else:
                 counter = 0 if counter < 5 else counter
+        return self.check_winning_condition(counter, grid, symbol, win_type, start, end)
+
+    @staticmethod
+    def check_winning_condition(counter, grid, symbol, win_type, start, end):
         if counter == 5:
-            return True
+            if win_type == 0:
+                print(f"Check win type {win_type}")
+                left_cond = (start[0] - 1 >= 0 and grid[start[0] - 1][start[1]][1] is not None and
+                             grid[start[0] - 1][start[1]][1] != symbol)
+                right_cond = (end[0] + 1 < 30 and grid[end[0] + 1][end[1]][1] is not None and
+                              grid[end[0] + 1][end[1]][1] != symbol)
+                return not (left_cond and right_cond)
+            if win_type == 1:
+                print(f"Check win type {win_type}")
+                top_cond = (start[1] - 1 >= 0 and grid[start[0]][start[1] - 1][1] is not None and
+                            grid[start[0]][start[1] - 1][1] != symbol)
+                bottom_cond = (end[1] + 1 < 30 and grid[end[0]][end[1] + 1][1] is not None and
+                               grid[end[0]][end[1] + 1][1] != symbol)
+                return not (top_cond and bottom_cond)
+            if win_type == 2:
+                print(f"Check win type {win_type}")
+                top_left_cond = (start[0] - 1 >= 0 and start[1] - 1 >= 0 and
+                                 grid[start[0] - 1][start[1] - 1][1] is not None and
+                                 grid[start[0] - 1][start[1] - 1][1] != symbol)
+                bottom_right_cond = (end[0] + 1 < 30 and end[1] + 1 < 30 and
+                                     grid[end[0] + 1][end[1] + 1][1] is not None and
+                                     grid[end[0] + 1][end[1] + 1][1] != symbol)
+                return not (top_left_cond and bottom_right_cond)
+            if win_type == 3:
+                print(f"Check win type {win_type}")
+                bottom_left_cond = (start[0] - 1 >= 0 and start[1] + 1 < 30 and
+                                    grid[start[0] - 1][start[1] + 1][1] is not None and
+                                    grid[start[0] - 1][start[1] + 1][1] != symbol)
+                top_right_cond = (end[0] + 1 < 30 and end[1] - 1 >= 0 and
+                                  grid[end[0] + 1][end[1] - 1][1] is not None and
+                                  grid[end[0] + 1][end[1] - 1][1] != symbol)
+                return not (bottom_left_cond and top_right_cond)
         return False
 
     @staticmethod
