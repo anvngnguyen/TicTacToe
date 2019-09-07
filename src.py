@@ -1,12 +1,12 @@
 import math
 import pygame
+from tkinter import messagebox, Tk
 from typing import List, Tuple
 
 
 # TODO:
 # 1. Implement menu screen
-# 2. Implement game-over screen
-# 3. Add documentation
+# 2. Add documentation
 class TicTacToe:
     # Screen Variables
     WIDTH = 0
@@ -35,17 +35,19 @@ class TicTacToe:
         self.FONT = pygame.font.SysFont("Arial", 15)
 
     def execute(self):
-        done, grid, player, state = self.initialize_game()
+        done, replay, grid, player, state = self.initialize_game()
         while not done:
-            done, player, state = self.run_game(done, grid, player, state)
+            done, replay, player, state = self.run_game(done, grid, player, state)
+        if replay:
+            self.execute()
 
-    def initialize_game(self) -> Tuple[bool, List[List], int, str]:
+    def initialize_game(self) -> Tuple[bool, bool, List[List], int, str]:
         pygame.init()
         player = 0
-        done = False
+        done, replay = False, False
         state = "PLAYING"
         grid = self.initialize_grid()
-        return done, grid, player, state
+        return done, replay, grid, player, state
 
     def initialize_grid(self) -> List[List]:
         grid = []
@@ -59,14 +61,15 @@ class TicTacToe:
         return grid
 
     def run_game(self, done, grid, player, state):
+        replay = False
         if state == "MENU":
             pass
         elif state == "PLAYING":
             done, player, state = self.play(done, grid, player, state)
         elif state == "GAME-OVER":
-            done = self.game_over(player)
+            done, replay = self.game_over(player)
         pygame.display.flip()
-        return done, player, state
+        return done, replay, player, state
 
     def play(self, done, grid, player, state):
         for event in pygame.event.get():
@@ -183,11 +186,25 @@ class TicTacToe:
 
     @staticmethod
     def game_over(player):
-        if player is not None:
-            print(f"Player {1 - player + 1} wins")
-        input()
-        return True
+        screen = Screen()
+        replay = screen.show_game_over_screen(2 - player)
+        return True, replay
 
+
+class Screen:
+    screen = None
+
+    def __init__(self):
+        self.screen = Tk()
+        self.screen.wm_withdraw()
+
+    @staticmethod
+    def show_game_over_screen(player):
+        msg_box = messagebox.askquestion("Game Over", f"Player {player} won. Play Again?")
+        if msg_box == "yes":
+            return True
+        else:
+            return False
 
 game = TicTacToe()
 game.execute()
