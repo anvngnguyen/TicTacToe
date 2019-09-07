@@ -812,7 +812,7 @@ proc ::tk::MenuNextMenu {menu direction} {
     # First handle traversals into and out of cascaded menus.
 
     if {$direction eq "right"} {
-	set count 1
+	set piece_count 1
 	set parent [winfo parent $menu]
 	set class [winfo class $parent]
 	if {[$menu type active] eq "cascade"} {
@@ -835,7 +835,7 @@ proc ::tk::MenuNextMenu {menu direction} {
 	    }
 	}
     } else {
-	set count -1
+	set piece_count -1
 	set m2 [winfo parent $menu]
 	if {[winfo class $m2] eq "Menu"} {
 	    $menu activate none
@@ -896,10 +896,10 @@ proc ::tk::MenuNextMenu {menu direction} {
 #
 # Arguments:
 # menu -			Menu window that received the keystroke.
-# count -			1 means go to the next lower entry,
+# piece_count -			1 means go to the next lower entry,
 #				-1 means go to the next higher entry.
 
-proc ::tk::MenuNextEntry {menu count} {
+proc ::tk::MenuNextEntry {menu piece_count} {
     if {[$menu index last] eq "none"} {
 	return
     }

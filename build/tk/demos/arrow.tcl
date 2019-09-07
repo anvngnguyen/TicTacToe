@@ -103,7 +103,7 @@ proc arrowSetup c {
     $c create text $v(x1) 330 -text "-arrowshape  {$v(a)  $v(b)  $v(c)}" \
 	    -anchor w -font {Helvetica 18}
 
-    incr v(count)
+    incr v(piece_count)
 }
 
 set w .arrow
@@ -133,7 +133,7 @@ set demo_arrowInfo(x1) 40
 set demo_arrowInfo(x2) 350
 set demo_arrowInfo(y) 150
 set demo_arrowInfo(smallTips) {5 5 2}
-set demo_arrowInfo(count) 0
+set demo_arrowInfo(piece_count) 0
 if {[winfo depth $c] > 1} {
     set demo_arrowInfo(bigLineStyle) "-fill SkyBlue1"
     set demo_arrowInfo(boxStyle) "-fill {} -outline black -width 1"

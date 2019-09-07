@@ -1356,7 +1356,7 @@ typedef struct {
         char                  **subspace_ptrs;
         npy_intp              *subspace_strides;
 
-        /* Count for the external loop (which ever it is) for API iteration */
+        /* piece_count for the external loop (which ever it is) for API iteration */
         npy_intp              iter_count;
 
 } PyArrayMapIterObject;

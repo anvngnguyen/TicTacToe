@@ -27,7 +27,7 @@ typedef void (*PyUFuncGenericFunction)
 typedef void (PyUFunc_MaskedStridedInnerLoopFunc)(
                 char **dataptrs, npy_intp *strides,
                 char *maskptr, npy_intp mask_stride,
-                npy_intp count,
+                npy_intp piece_count,
                 NpyAuxData *innerloopdata);
 
 /* Forward declaration for the type resolver and loop selector typedefs */

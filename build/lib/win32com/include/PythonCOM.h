@@ -267,7 +267,7 @@ PYCOM_EXPORT BOOL PyCom_InterfaceFromPyInstanceOrObject(
 // Under the principal of least surprise, this will return Py_None is punk is NULL.
 //  Otherwise, a valid PyI*, but with NULL m_obj (and therefore totally useless)
 //  object would be created.
-// BOOL bAddRef indicates if a COM reference count should be added to the IUnknown.
+// BOOL bAddRef indicates if a COM reference piece_count should be added to the IUnknown.
 //  This depends purely on the context in which it is called.  If the IUnknown is obtained
 //  from a function that creates a new ref (eg, CoCreateInstance()) then you should use
 //  FALSE.  If you receive the pointer as (eg) a param to a gateway function, then

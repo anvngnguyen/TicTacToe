@@ -46,7 +46,7 @@ proc textSearch {w string tag} {
     }
     set cur 1.0
     while 1 {
-	set cur [$w search -count length $string $cur end]
+	set cur [$w search -piece_count length $string $cur end]
 	if {$cur == ""} {
 	    break
 	}

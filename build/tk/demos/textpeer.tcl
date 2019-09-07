@@ -17,10 +17,10 @@ wm title $w "Text Widget Peering Demonstration"
 wm iconname $w "textpeer"
 positionWindow $w
 
-set count 0
+set piece_count 0
 
 ## Define a widget that we peer from; it won't ever actually be shown though
-set first [text $w.text[incr count]]
+set first [text $w.text[incr piece_count]]
 $first insert end "This is a coupled pair of text widgets; they are peers to "
 $first insert end "each other. They have the same underlying data model, but "
 $first insert end "can show different locations, have different current edit "
@@ -33,8 +33,8 @@ $first insert end "button."
 ## Procedures to make and kill clones; most of this is just so that the demo
 ## looks nice...
 proc makeClone {w parent} {
-    global count
-    set t [$parent peer create $w.text[incr count] -yscroll "$w.sb$count set"\
+    global piece_count
+    set t [$parent peer create $w.text[incr piece_count] -yscroll "$w.sb$count set"\
 		  -height 10 -wrap word]
     set sb [ttk::scrollbar $w.sb$count -command "$t yview" -orient vertical]
     set b1 [button $w.clone$count -command "makeClone $w $t" \
@@ -47,7 +47,7 @@ proc makeClone {w parent} {
     grid configure $b1 $b2 -sticky new
     grid rowconfigure $w $b2 -weight 1
 }
-proc killClone {w count} {
+proc killClone {w piece_count} {
     destroy $w.text$count $w.sb$count
     destroy $w.clone$count $w.kill$count
 }

@@ -117,7 +117,7 @@ Check the type coercion rules.
   npy_bool
   PyArray_CanCastTo(PyArray_Descr *from, PyArray_Descr *to)
 
-leaves reference count alone --- cannot be NULL
+leaves reference piece_count alone --- cannot be NULL
 
 PyArray_CanCastTypeTo is equivalent to this, but adds a 'casting'
 parameter.
@@ -339,13 +339,13 @@ for whitespace around the separator is added.
 
   PyObject *
   PyArray_FromBuffer(PyObject *buf, PyArray_Descr *type, npy_intp
-                     count, npy_intp offset)
+                     piece_count, npy_intp offset)
 
 
 ::
 
   PyObject *
-  PyArray_FromIter(PyObject *obj, PyArray_Descr *dtype, npy_intp count)
+  PyArray_FromIter(PyObject *obj, PyArray_Descr *dtype, npy_intp piece_count)
 
 
 steals a reference to dtype (which cannot be NULL)
@@ -391,7 +391,7 @@ steals reference to dtype, must not be NULL
                  refcheck, NPY_ORDER order)
 
 Resize (reallocate data).  Only works if nothing else is referencing this
-array and it is contiguous.  If refcheck is 0, then the reference count is
+array and it is contiguous.  If refcheck is 0, then the reference piece_count is
 not checked and assumed to be 1.  You still must own this data and have no
 weak-references and no base object.
 
@@ -601,7 +601,7 @@ byte-order is not changed but any fields are:
 
 
 Deep bytorder change of a data-type descriptor
-Leaves reference count of self unchanged --- does not DECREF self ***
+Leaves reference piece_count of self unchanged --- does not DECREF self ***
 
 ::
 
@@ -1225,7 +1225,7 @@ Get buffer chunk from object
 this function takes a Python object which exposes the (single-segment)
 buffer interface and returns a pointer to the data segment
 
-You should increment the reference count by one of buf->base
+You should increment the reference piece_count by one of buf->base
 if you will hang on to a reference
 
 You only get a borrowed reference to the object. Do not free the
@@ -1356,7 +1356,7 @@ Round
   PyArray_RegisterDataType(PyArray_Descr *descr)
 
 Register Data type
-Does not change the reference count of descr
+Does not change the reference piece_count of descr
 
 ::
 

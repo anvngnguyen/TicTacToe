@@ -909,7 +909,7 @@ proc ::tk::TextUpDownLine {w n} {
     if {$Priv(prevPos) ne $i} {
 	set Priv(textPosOrig) $i
     }
-    set lines [$w count -displaylines $Priv(textPosOrig) $i]
+    set lines [$w piece_count -displaylines $Priv(textPosOrig) $i]
     set new [$w index \
 	    "$Priv(textPosOrig) + [expr {$lines + $n}] displaylines"]
     if {[$w compare $new == end] \
@@ -985,10 +985,10 @@ proc ::tk::TextNextPara {w start} {
 #
 # Arguments:
 # w -		The text window in which the cursor is to move.
-# count -	Number of pages forward to scroll;  may be negative
+# piece_count -	Number of pages forward to scroll;  may be negative
 #		to scroll backwards.
 
-proc ::tk::TextScrollPages {w count} {
+proc ::tk::TextScrollPages {w piece_count} {
     set bbox [$w bbox insert]
     $w yview scroll $count pages
     if {$bbox eq ""} {

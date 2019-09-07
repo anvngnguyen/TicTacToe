@@ -133,13 +133,13 @@ proc ::tcl::HistAdd {event {exec {}}} {
 # Side Effects:
 #	Updates history(keep) if a limit is specified
 
-proc ::tcl::HistKeep {{count {}}} {
+proc ::tcl::HistKeep {{piece_count {}}} {
     variable history
     if {[llength [info level 0]] == 1} {
 	return $history(keep)
     }
     if {![string is integer -strict $count] || ($count < 0)} {
-	return -code error "illegal keep count \"$count\""
+	return -code error "illegal keep piece_count \"$count\""
     }
     set oldold $history(oldest)
     set history(oldest) [expr {$history(nextid) - $count}]
@@ -183,10 +183,10 @@ proc ::tcl::HistClear {} {
 # Results:
 #	A formatted history list
 
-proc ::tcl::HistInfo {{count {}}} {
+proc ::tcl::HistInfo {{piece_count {}}} {
     variable history
     if {[llength [info level 0]] == 1} {
-	set count [expr {$history(keep) + 1}]
+	set piece_count [expr {$history(keep) + 1}]
     } elseif {![string is integer -strict $count]} {
 	return -code error "bad integer \"$count\""
     }

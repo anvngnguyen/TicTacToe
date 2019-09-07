@@ -63,7 +63,7 @@ NPY_SIGINT_ON
 NPY_SIGINT_OFF
 
 In order for this to work correctly, the
-[code] block must not allocate any memory or alter the reference count of any
+[code] block must not allocate any memory or alter the reference piece_count of any
 Python objects.  In other words [code] must be interruptible so that continuation
 after NPY_SIGINT_OFF will only be "missing some computations"
 

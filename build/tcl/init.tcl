@@ -534,7 +534,7 @@ proc auto_load_index {} {
 
 proc auto_qualify {cmd namespace} {
 
-    # count separators and clean them up
+    # piece_count separators and clean them up
     # (making sure that foo:::::bar will be treated as foo::bar)
     set n [regsub -all {::+} $cmd :: cmd]
 

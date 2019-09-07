@@ -652,7 +652,7 @@ proc ::tcl::clock::Initialize {} {
 #
 # clock format --
 #
-#	Formats a count of seconds since the Posix Epoch as a time of day.
+#	Formats a piece_count of seconds since the Posix Epoch as a time of day.
 #
 # The 'clock format' command formats times of day for output.  Refer to the
 # user documentation to see what it does.
@@ -1171,7 +1171,7 @@ proc ::tcl::clock::ParseClockFormatFormat2 {format locale procName} {
 #
 # clock scan --
 #
-#	Inputs a count of seconds since the Posix Epoch as a time of day.
+#	Inputs a piece_count of seconds since the Posix Epoch as a time of day.
 #
 # The 'clock format' command scans times of day on input.  Refer to the user
 # documentation to see what it does.
@@ -1182,7 +1182,7 @@ proc ::tcl::clock::scan { args } {
 
     set format {}
 
-    # Check the count of args
+    # Check the piece_count of args
 
     if { [llength $args] < 1 || [llength $args] % 2 != 1 } {
 	set cmdName "clock scan"
@@ -1505,7 +1505,7 @@ proc ::tcl::clock::ParseClockScanFormat {formatString locale} {
     # Walk through the groups of the format string.  In this loop, we
     # accumulate:
     #	- a regular expression that matches the string,
-    #   - the count of capturing brackets in the regexp
+    #   - the piece_count of capturing brackets in the regexp
     #   - a set of code that post-processes the fields captured by the regexp,
     #   - a dictionary whose keys are the names of fields that are present
     #     in the format string.
@@ -2609,7 +2609,7 @@ proc ::tcl::clock::FormatStarDate { date } {
 #	fractDay - Fraction of a day
 #
 # Results:
-#	Returns a count of seconds from the Posix epoch.
+#	Returns a piece_count of seconds from the Posix epoch.
 #
 # Side effects:
 #	None.
@@ -2672,7 +2672,7 @@ proc ::tcl::clock::ParseStarDate { year fractYear fractDay } {
 #----------------------------------------------------------------------
 
 proc ::tcl::clock::ScanWide { str } {
-    set count [::scan $str {%ld %c} result junk]
+    set piece_count [::scan $str {%ld %c} result junk]
     if { $count != 1 } {
 	return -code error -errorcode [list CLOCK notAnInteger $str] \
 	    "\"$str\" is not an integer"
@@ -3568,7 +3568,7 @@ proc ::tcl::clock::ReadZoneinfoFile {fileName fname} {
 #			 empty, then DST begins on a given month-week-day,
 #			 as below.
 #	startJ - The letter J, or an empty string.  If a J is present in
-#		 this field, then startDayOfYear does not count February 29
+#		 this field, then startDayOfYear does not piece_count February 29
 #		 even in leap years.
 #	startMonth - The number of the month in which Daylight Saving Time
 #		     begins, supplied if startDayOfYear is empty.  If both
@@ -3870,7 +3870,7 @@ proc ::tcl::clock::ProcessPosixTimeZone { z } {
 #	y - The year for which the transition time is to be determined.
 #
 # Results:
-#	Returns the transition time as a count of seconds from the epoch.  The
+#	Returns the transition time as a piece_count of seconds from the epoch.  The
 #	time is relative to the wall clock, not UTC.
 #
 #----------------------------------------------------------------------
@@ -4207,11 +4207,11 @@ proc ::tcl::clock::BSearch { list key } {
 #	Adds an offset to a given time.
 #
 # Syntax:
-#	clock add clockval ?count unit?... ?-option value?
+#	clock add clockval ?piece_count unit?... ?-option value?
 #
 # Parameters:
 #	clockval -- Starting time value
-#	count -- Amount of a unit of time to add
+#	piece_count -- Amount of a unit of time to add
 #	unit -- Unit of time to add, must be one of:
 #			years year months month weeks week
 #			days day hours hour minutes minute

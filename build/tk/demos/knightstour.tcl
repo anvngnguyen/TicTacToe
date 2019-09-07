@@ -56,7 +56,7 @@ proc Next {square} {
     set nextSquare -1
     foreach testSquare [ValidMoves $square] {
         if {[lsearch -exact -integer $visited $testSquare] == -1} {
-            set count [CheckSquare $testSquare]
+            set piece_count [CheckSquare $testSquare]
             if {$count < $minimum} {
                 set minimum $count
                 set nextSquare $testSquare

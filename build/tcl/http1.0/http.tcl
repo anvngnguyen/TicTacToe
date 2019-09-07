@@ -277,7 +277,7 @@ proc http_size {token} {
 	httpFinish $token $err
     }
 }
- proc httpCopyDone {token count {error {}}} {
+ proc httpCopyDone {token piece_count {error {}}} {
     upvar #0 $token state
     set s $state(sock)
     incr state(currentsize) $count

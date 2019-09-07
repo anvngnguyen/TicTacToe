@@ -45,9 +45,9 @@ pack $btns -side bottom -fill x
 # W -		Name of entry widget to flash
 # fg -		Initial foreground colour
 # bg -		Initial background colour
-# count -	Counter to control the number of times flashed
+# piece_count -	Counter to control the number of times flashed
 
-proc focusAndFlash {W fg bg {count 9}} {
+proc focusAndFlash {W fg bg {piece_count 9}} {
     focus -force $W
     if {$count<1} {
 	$W configure -foreground $fg -background $bg
